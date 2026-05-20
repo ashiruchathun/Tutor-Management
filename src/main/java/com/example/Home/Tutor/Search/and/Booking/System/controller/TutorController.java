@@ -17,7 +17,7 @@ public class TutorController {
         this.tutorService = tutorService;
     }
 
-    // Public tutor CRUD API used by the React frontend.
+    // Admin-only write API; public users can only read tutor data.
     @PostMapping
     public Tutor addTutor(@RequestBody Tutor tutor) {
         return tutorService.addTutor(tutor);

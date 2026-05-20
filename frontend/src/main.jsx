@@ -45,17 +45,20 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  const editMatch = path.match(/^\/tutors\/edit\/(\d+)$/);
+  const adminEditMatch = path.match(/^\/admin\/tutors\/edit\/(\d+)$/);
+  const isAdminRoute = path.startsWith('/admin');
 
   return (
     <main>
-      <TopNav navigate={navigate} activePath={path} />
+      <TopNav navigate={navigate} activePath={path} isAdminRoute={isAdminRoute} />
       {path === '/' || path === '/tutors' ? (
-        <TutorListPage navigate={navigate} />
-      ) : path === '/tutors/add' ? (
+        <TutorListPage navigate={navigate} isAdmin={false} />
+      ) : path === '/admin/tutors' ? (
+        <TutorListPage navigate={navigate} isAdmin />
+      ) : path === '/admin/tutors/add' ? (
         <TutorFormPage navigate={navigate} />
-      ) : editMatch ? (
-        <TutorFormPage tutorId={editMatch[1]} navigate={navigate} />
+      ) : adminEditMatch ? (
+        <TutorFormPage tutorId={adminEditMatch[1]} navigate={navigate} />
       ) : (
         <NotFoundPage navigate={navigate} />
       )}
@@ -63,7 +66,7 @@ function App() {
   );
 }
 
-function TopNav({ navigate, activePath }) {
+function TopNav({ navigate, activePath, isAdminRoute }) {
   return (
     <nav className="top-nav">
       <button className="brand" onClick={() => navigate('/tutors')}>
@@ -75,16 +78,27 @@ function TopNav({ navigate, activePath }) {
           <Home size={17} />
           Tutors
         </button>
-        <button className={activePath === '/tutors/add' ? 'active' : ''} onClick={() => navigate('/tutors/add')}>
-          <Plus size={17} />
-          Add Tutor
-        </button>
+        {isAdminRoute ? (
+          <>
+            <button className={activePath === '/admin/tutors' ? 'active' : ''} onClick={() => navigate('/admin/tutors')}>
+              <Pencil size={17} />
+              Admin
+            </button>
+            <button className={activePath === '/admin/tutors/add' ? 'active' : ''} onClick={() => navigate('/admin/tutors/add')}>
+              <Plus size={17} />
+              Add Tutor
+            </button>
+            <a className="nav-link-button" href="/logout">Logout</a>
+          </>
+        ) : (
+          <a className="nav-link-button" href="/admin/tutors">Admin</a>
+        )}
       </div>
     </nav>
   );
 }
 
-function TutorListPage({ navigate }) {
+function TutorListPage({ navigate, isAdmin }) {
   const [tutors, setTutors] = useState([]);
   const [searchType, setSearchType] = useState('all');
   const [searchValue, setSearchValue] = useState('');
@@ -176,9 +190,13 @@ function TutorListPage({ navigate }) {
     <>
       <section className="hero">
         <div>
-          <p className="eyebrow">Tutor directory</p>
-          <h1>Find and manage every tutor profile.</h1>
-          <p className="hero-copy">Search the directory, review tutor details, and jump into focused add or edit pages when details need to change.</p>
+          <p className="eyebrow">{isAdmin ? 'Admin dashboard' : 'Tutor directory'}</p>
+          <h1>{isAdmin ? 'Manage tutor profiles.' : 'Find every tutor profile.'}</h1>
+          <p className="hero-copy">
+            {isAdmin
+              ? 'Add new tutors, update profile details, and remove tutor records from the protected admin area.'
+              : 'Search the directory and review tutor details. Editing is available only from the admin area.'}
+          </p>
         </div>
       </section>
 
@@ -201,6 +219,12 @@ function TutorListPage({ navigate }) {
             <p className="eyebrow">Directory</p>
             <h2>Tutors</h2>
           </div>
+          {isAdmin && (
+            <button className="primary-action compact" onClick={() => navigate('/admin/tutors/add')}>
+              <Plus size={17} />
+              Add Tutor
+            </button>
+          )}
         </div>
 
         <div className="toolbar">
@@ -235,7 +259,7 @@ function TutorListPage({ navigate }) {
         ) : (
           <div className="tutor-grid">
             {tutors.map((tutor) => (
-              <TutorCard key={tutor.tutorId} tutor={tutor} navigate={navigate} onDelete={deleteTutor} />
+              <TutorCard key={tutor.tutorId} tutor={tutor} navigate={navigate} onDelete={deleteTutor} isAdmin={isAdmin} />
             ))}
           </div>
         )}
@@ -314,7 +338,7 @@ function TutorFormPage({ tutorId, navigate }) {
         });
       }
 
-      navigate('/tutors');
+      navigate('/admin/tutors');
     } catch {
       setMessage({ type: 'error', text: 'Could not save tutor. Please check the form and try again.' });
     } finally {
@@ -324,9 +348,9 @@ function TutorFormPage({ tutorId, navigate }) {
 
   return (
     <section className="form-page">
-      <button className="back-button" onClick={() => navigate('/tutors')}>
+      <button className="back-button" onClick={() => navigate('/admin/tutors')}>
         <ArrowLeft size={17} />
-        Back to tutors
+        Back to admin
       </button>
 
       <form className="panel tutor-form standalone-form" onSubmit={saveTutor}>
@@ -411,7 +435,7 @@ function TutorFormFields({ form, updateField }) {
   );
 }
 
-function TutorCard({ tutor, navigate, onDelete }) {
+function TutorCard({ tutor, navigate, onDelete, isAdmin }) {
   return (
     <article className="tutor-card">
       <div className="card-top">
@@ -435,16 +459,18 @@ function TutorCard({ tutor, navigate, onDelete }) {
         <span>{tutor.tutorType}</span>
       </div>
 
-      <div className="card-actions">
-        <button onClick={() => navigate(`/tutors/edit/${tutor.tutorId}`)}>
-          <Pencil size={16} />
-          Edit
-        </button>
-        <button className="danger" onClick={() => onDelete(tutor.tutorId)}>
-          <Trash2 size={16} />
-          Delete
-        </button>
-      </div>
+      {isAdmin && (
+        <div className="card-actions">
+          <button onClick={() => navigate(`/admin/tutors/edit/${tutor.tutorId}`)}>
+            <Pencil size={16} />
+            Edit
+          </button>
+          <button className="danger" onClick={() => onDelete(tutor.tutorId)}>
+            <Trash2 size={16} />
+            Delete
+          </button>
+        </div>
+      )}
     </article>
   );
 }

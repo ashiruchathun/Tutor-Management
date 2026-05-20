@@ -41,6 +41,7 @@ main {
 
 .brand,
 .nav-actions button,
+.nav-link-button,
 .back-button {
   align-items: center;
   background: transparent;
@@ -52,6 +53,7 @@ main {
   gap: 8px;
   min-height: 42px;
   padding: 0 12px;
+  text-decoration: none;
 }
 
 .brand {
@@ -70,6 +72,7 @@ main {
 
 .nav-actions button.active,
 .nav-actions button:hover,
+.nav-link-button:hover,
 .back-button:hover {
   background: #dbeafe;
   color: #1d4ed8;
