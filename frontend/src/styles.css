@@ -41,6 +41,7 @@ main {
 
 .brand,
 .nav-actions button,
+.nav-link-button,
 .back-button {
   align-items: center;
   background: transparent;
@@ -52,6 +53,7 @@ main {
   gap: 8px;
   min-height: 42px;
   padding: 0 12px;
+  text-decoration: none;
 }
 
 .brand {
@@ -70,6 +72,7 @@ main {
 
 .nav-actions button.active,
 .nav-actions button:hover,
+.nav-link-button:hover,
 .back-button:hover {
   background: #dbeafe;
   color: #1d4ed8;
@@ -91,6 +94,48 @@ main {
   max-width: 1380px;
   min-height: 340px;
   padding: 42px;
+}
+
+.login-page {
+  align-items: stretch;
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(0, 1fr) 430px;
+  margin: 0 auto;
+  max-width: 1180px;
+  min-height: calc(100vh - 56px);
+}
+
+.login-hero {
+  align-content: end;
+  background:
+    linear-gradient(rgba(12, 20, 35, 0.72), rgba(12, 20, 35, 0.58)),
+    url("https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1800&q=80");
+  background-position: center;
+  background-size: cover;
+  border-radius: 8px;
+  color: #fff;
+  display: grid;
+  min-height: 620px;
+  padding: 42px;
+}
+
+.login-brand {
+  align-self: start;
+  color: #fff;
+  justify-self: start;
+}
+
+.login-panel {
+  align-self: center;
+}
+
+.login-panel label + label {
+  margin-top: 14px;
+}
+
+.login-back {
+  margin-top: 14px;
 }
 
 .eyebrow {
@@ -476,8 +521,13 @@ select:focus {
 }
 
 @media (max-width: 1060px) {
-  .hero {
+  .hero,
+  .login-page {
     grid-template-columns: 1fr;
+  }
+
+  .login-hero {
+    min-height: 420px;
   }
 
   .hero-actions {
@@ -496,6 +546,11 @@ select:focus {
 
   .hero {
     min-height: 420px;
+    padding: 24px;
+  }
+
+  .login-hero {
+    min-height: 360px;
     padding: 24px;
   }
 
