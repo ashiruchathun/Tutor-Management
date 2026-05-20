@@ -10,7 +10,6 @@ import {
   Pencil,
   Phone,
   Plus,
-  RefreshCcw,
   Search,
   Trash2,
   UsersRound,
@@ -181,16 +180,6 @@ function TutorListPage({ navigate }) {
           <h1>Find and manage every tutor profile.</h1>
           <p className="hero-copy">Search the directory, review tutor details, and jump into focused add or edit pages when details need to change.</p>
         </div>
-        <div className="hero-actions">
-          <button className="primary-action" onClick={() => navigate('/tutors/add')}>
-            <Plus size={18} />
-            Add tutor
-          </button>
-          <button className="secondary-action" onClick={loadTutors}>
-            <RefreshCcw size={18} />
-            Refresh
-          </button>
-        </div>
       </section>
 
       <section className="stats-grid" aria-label="Tutor summary">
@@ -212,10 +201,6 @@ function TutorListPage({ navigate }) {
             <p className="eyebrow">Directory</p>
             <h2>Tutors</h2>
           </div>
-          <button className="primary-action compact" onClick={() => navigate('/tutors/add')}>
-            <Plus size={17} />
-            Add Tutor
-          </button>
         </div>
 
         <div className="toolbar">
@@ -234,7 +219,6 @@ function TutorListPage({ navigate }) {
             Search
           </button>
           <button className="toolbar-button ghost" onClick={loadTutors}>
-            <RefreshCcw size={17} />
             Reset
           </button>
         </div>
