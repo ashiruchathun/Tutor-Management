@@ -17,7 +17,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/tutors", "/index.html", "/assets/**").permitAll()
+                        .requestMatchers("/", "/tutors", "/login", "/index.html", "/assets/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tutors/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/tutors").hasRole("ADMIN")
@@ -26,6 +26,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
+                        .loginPage("/login")
                         .defaultSuccessUrl("/admin/tutors", true)
                         .permitAll()
                 )

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ReactPageController {
 
     // Serve React routes from Spring Boot so direct browser refreshes keep working.
-    @GetMapping({"/", "/tutors", "/admin/tutors", "/admin/tutors/add", "/admin/tutors/edit/{id}"})
+    @GetMapping({"/", "/tutors", "/login", "/admin/tutors", "/admin/tutors/add", "/admin/tutors/edit/{id}"})
     public String dashboard() {
         return "forward:/index.html";
     }

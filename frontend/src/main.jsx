@@ -5,6 +5,7 @@ import {
   BookOpen,
   GraduationCap,
   Home,
+  LogIn,
   Loader2,
   Mail,
   Pencil,
@@ -50,8 +51,10 @@ function App() {
 
   return (
     <main>
-      <TopNav navigate={navigate} activePath={path} isAdminRoute={isAdminRoute} />
-      {path === '/' || path === '/tutors' ? (
+      {path !== '/login' && <TopNav navigate={navigate} activePath={path} isAdminRoute={isAdminRoute} />}
+      {path === '/login' ? (
+        <LoginPage navigate={navigate} />
+      ) : path === '/' || path === '/tutors' ? (
         <TutorListPage navigate={navigate} isAdmin={false} />
       ) : path === '/admin/tutors' ? (
         <TutorListPage navigate={navigate} isAdmin />
@@ -91,10 +94,62 @@ function TopNav({ navigate, activePath, isAdminRoute }) {
             <a className="nav-link-button" href="/logout">Logout</a>
           </>
         ) : (
-          <a className="nav-link-button" href="/admin/tutors">Admin</a>
+          <a className="nav-link-button" href="/login">Admin</a>
         )}
       </div>
     </nav>
+  );
+}
+
+function LoginPage({ navigate }) {
+  const params = new URLSearchParams(window.location.search);
+  const hasError = params.has('error');
+  const loggedOut = params.has('logout');
+
+  return (
+    <section className="login-page">
+      <div className="login-hero">
+        <button className="brand login-brand" onClick={() => navigate('/tutors')}>
+          <GraduationCap size={24} />
+          Home Tutor Search
+        </button>
+        <p className="eyebrow">Admin access</p>
+        <h1>Sign in to manage tutor profiles.</h1>
+        <p className="hero-copy">Use the protected admin area to add new tutors, update profile details, and manage directory records.</p>
+      </div>
+
+      <form className="panel login-panel" method="post" action="/login">
+        <div className="panel-heading">
+          <div>
+            <p className="eyebrow">Secure login</p>
+            <h2>Admin Login</h2>
+          </div>
+          <LogIn size={24} />
+        </div>
+
+        {hasError && <p className="message error">Invalid username or password.</p>}
+        {loggedOut && <p className="message success">You have been logged out.</p>}
+
+        <label>
+          Username
+          <input name="username" autoComplete="username" required />
+        </label>
+        <label>
+          Password
+          <input name="password" type="password" autoComplete="current-password" required />
+        </label>
+
+        <button className="submit-button">
+          <LogIn size={18} />
+          Sign in
+        </button>
+
+        <button type="button" className="back-button login-back" onClick={() => navigate('/tutors')}>
+          <ArrowLeft size={17} />
+          Back to public tutors
+        </button>
+      </form>
+    </section>
   );
 }
 
