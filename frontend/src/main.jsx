@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import {
   ArrowLeft,
   BookOpen,
-  CheckCircle2,
   GraduationCap,
   Home,
   Loader2,
@@ -99,7 +98,6 @@ function TutorListPage({ navigate }) {
 
   const stats = useMemo(() => {
     const subjects = new Set(tutors.map((tutor) => tutor.subject).filter(Boolean));
-    const onlineTutors = tutors.filter((tutor) => tutor.tutorType === 'Online').length;
     const averageRate = tutors.length
       ? Math.round(tutors.reduce((sum, tutor) => sum + Number(tutor.hourlyRate || 0), 0) / tutors.length)
       : 0;
@@ -107,7 +105,6 @@ function TutorListPage({ navigate }) {
     return [
       { label: 'Tutors', value: tutors.length, icon: UsersRound },
       { label: 'Subjects', value: subjects.size, icon: BookOpen },
-      { label: 'Online', value: onlineTutors, icon: CheckCircle2 },
       { label: 'Avg. Rate', value: `Rs. ${averageRate}`, icon: GraduationCap },
     ];
   }, [tutors]);
