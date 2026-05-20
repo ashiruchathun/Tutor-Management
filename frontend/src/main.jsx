@@ -173,7 +173,7 @@ function TutorListPage({ navigate, isAdmin }) {
     return [
       { label: 'Tutors', value: tutors.length, icon: UsersRound },
       { label: 'Subjects', value: subjects.size, icon: BookOpen },
-      { label: 'Avg. Rate', value: `Rs. ${averageRate}`, icon: GraduationCap },
+      { label: 'Average Rate', value: ` Rs. ${averageRate}`, icon: GraduationCap },
     ];
   }, [tutors]);
 
