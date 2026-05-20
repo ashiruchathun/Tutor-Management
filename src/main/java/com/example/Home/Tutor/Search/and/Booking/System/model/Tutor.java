@@ -17,26 +17,8 @@ public class Tutor extends Person {
     private String availability;
     private String tutorType; // Online, Home Visit, Hybrid
 
+    // Required by JPA and JSON deserialization.
     public Tutor() {
-    }
-
-    public Tutor(Long tutorId, String name, String email, String phone,
-                 String subject, String qualification, int experienceYears,
-                 double hourlyRate, String availability, String tutorType) {
-
-        super(name, email, phone);
-        this.tutorId = tutorId;
-        this.subject = subject;
-        this.qualification = qualification;
-        this.experienceYears = experienceYears;
-        this.hourlyRate = hourlyRate;
-        this.availability = availability;
-        this.tutorType = tutorType;
-    }
-
-    @Override
-    public String getRole() {
-        return "Tutor";
     }
 
     public Long getTutorId() {

@@ -12,14 +12,6 @@ public abstract class Person {
     public Person() {
     }
 
-    public Person(String name, String email, String phone) {
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-    }
-
-    public abstract String getRole();
-
     public String getName() {
         return name;
     }

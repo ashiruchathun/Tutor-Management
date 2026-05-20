@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tutors")
+@RequestMapping("/api/tutors")
 @CrossOrigin(origins = "*")
 public class TutorController {
 
@@ -17,6 +17,7 @@ public class TutorController {
         this.tutorService = tutorService;
     }
 
+    // Public tutor CRUD API used by the React frontend.
     @PostMapping
     public Tutor addTutor(@RequestBody Tutor tutor) {
         return tutorService.addTutor(tutor);

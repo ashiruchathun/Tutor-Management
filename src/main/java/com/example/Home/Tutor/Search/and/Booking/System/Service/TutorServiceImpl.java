@@ -30,6 +30,7 @@ public class TutorServiceImpl implements TutorService {
 
     @Override
     public Tutor getTutorById(Long id) {
+        // Keep missing tutor responses as HTTP 404 instead of returning null to the controller.
         return tutorRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Tutor not found with ID: " + id));
     }
