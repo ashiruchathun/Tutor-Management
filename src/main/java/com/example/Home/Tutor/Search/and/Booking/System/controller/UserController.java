@@ -1,23 +1,24 @@
 package com.example.Home.Tutor.Search.and.Booking.System.controller;
 
 import com.example.Home.Tutor.Search.and.Booking.System.model.User;
+import com.example.Home.Tutor.Search.and.Booking.System.repository.UserRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @RequestMapping("/users")
 public class UserController {
 
-    private final List<User> users = new ArrayList<>();
-    private Long nextId = 1L;
+    private final UserRepository userRepository;
+
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @GetMapping
     public String getUsers(Model model) {
-        model.addAttribute("users", users);
+        model.addAttribute("users", userRepository.findAll());
         return "user-list";
     }
 
@@ -29,38 +30,31 @@ public class UserController {
 
     @PostMapping("/save")
     public String saveUser(@ModelAttribute User user) {
-        user.setId(nextId++);
-        users.add(user);
+        userRepository.save(user);
         return "redirect:/users";
     }
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        for (User user : users) {
-            if (user.getId().equals(id)) {
-                model.addAttribute("user", user);
-                return "edit-user";
-            }
+        User user = userRepository.findById(id).orElse(null);
+
+        if (user == null) {
+            return "redirect:/users";
         }
-        return "redirect:/users";
+
+        model.addAttribute("user", user);
+        return "edit-user";
     }
 
     @PostMapping("/update")
     public String updateUser(@ModelAttribute User updatedUser) {
-        for (User user : users) {
-            if (user.getId().equals(updatedUser.getId())) {
-                user.setName(updatedUser.getName());
-                user.setEmail(updatedUser.getEmail());
-                user.setPassword(updatedUser.getPassword());
-                break;
-            }
-        }
+        userRepository.save(updatedUser);
         return "redirect:/users";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteUser(@PathVariable Long id) {
-        users.removeIf(user -> user.getId().equals(id));
+        userRepository.deleteById(id);
         return "redirect:/users";
     }
 }
