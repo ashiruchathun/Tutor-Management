@@ -274,12 +274,6 @@ function TutorListPage({ navigate, isAdmin }) {
             <p className="eyebrow">Directory</p>
             <h2>Tutors</h2>
           </div>
-          {isAdmin && (
-            <button className="primary-action compact" onClick={() => navigate('/admin/tutors/add')}>
-              <Plus size={17} />
-              Add Tutor
-            </button>
-          )}
         </div>
 
         <div className="toolbar">

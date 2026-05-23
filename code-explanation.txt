@@ -1,0 +1,489 @@
+Home Tutor Search and Booking System - Code Explanation
+
+This file explains the main backend code structure of the project.
+It covers:
+
+1. Code flow
+2. Inheritance
+3. Relationships
+4. Main programming concepts
+5. CRUD operations
+6. Diagram relationship explanation
+
+
+1. Code Flow
+
+The project uses a Spring Boot backend and a React frontend.
+
+The general data flow is:
+
+Frontend Form
+    -> TutorController
+    -> TutorService
+    -> TutorServiceImpl
+    -> TutorRepository
+    -> MySQL Database
+
+Step-by-step flow:
+
+1. The user opens the React frontend.
+   The frontend is inside:
+   frontend/src/main.jsx
+
+2. When the user views tutors, the frontend sends a GET request to:
+   http://localhost:8080/api/tutors
+
+3. When the admin adds a tutor, the frontend sends a POST request to:
+   http://localhost:8080/api/tutors
+
+4. The request first reaches TutorController.
+   TutorController is responsible for handling API routes.
+
+5. TutorController does not directly save data.
+   It passes the request to TutorService.
+
+6. TutorService is an interface.
+   It defines what actions are available, such as add tutor, get tutors, update tutor, and delete tutor.
+
+7. TutorServiceImpl implements TutorService.
+   This class contains the actual logic for tutor operations.
+
+8. TutorServiceImpl uses TutorRepository.
+   TutorRepository talks to the database using Spring Data JPA.
+
+9. TutorRepository stores and retrieves Tutor objects from the MySQL database.
+
+10. The result is returned back in the opposite direction:
+    Database -> Repository -> Service -> Controller -> Frontend
+
+
+2. Inheritance
+
+Inheritance means one class can reuse fields and methods from another class.
+
+In this project:
+
+Person is the parent class.
+Tutor is the child class.
+
+Relationship:
+
+Person
+  ^
+  |
+Tutor
+
+Person class contains common person details:
+
+- name
+- email
+- phone
+
+Tutor class extends Person:
+
+public class Tutor extends Person
+
+This means Tutor automatically gets the fields and methods from Person.
+
+Tutor also has its own fields:
+
+- tutorId
+- subject
+- qualification
+- experienceYears
+- hourlyRate
+- availability
+- tutorType
+
+Why inheritance is used here:
+
+Tutor is a type of Person.
+Every tutor has a name, email, and phone number.
+So instead of writing those fields again inside Tutor, they are placed in Person and reused.
+
+
+3. Relationships
+
+The main relationships in the code are:
+
+1. Tutor inherits from Person.
+   This is an inheritance relationship.
+
+2. TutorController uses TutorService.
+   This is a dependency relationship.
+   The controller depends on the service to perform tutor operations.
+
+3. TutorServiceImpl implements TutorService.
+   This is an interface implementation relationship.
+
+4. TutorServiceImpl uses TutorRepository.
+   This is a dependency relationship.
+   The service needs the repository to access the database.
+
+5. TutorRepository extends JpaRepository.
+   This is an inheritance/interface extension relationship.
+   It gives TutorRepository built-in database methods.
+
+6. TutorRepository manages Tutor.
+   The repository stores, updates, deletes, and searches Tutor entities.
+
+7. ReactPageController serves frontend routes.
+   It forwards web pages like /tutors and /admin/tutors to the React app.
+
+8. SecurityConfig controls login and access.
+   It protects admin pages and write operations.
+
+
+4. Main Programming Concepts Used
+
+1. Object-Oriented Programming
+
+The project uses classes and objects.
+Examples:
+
+- Person
+- Tutor
+- TutorController
+- TutorServiceImpl
+
+Tutor is an object model that represents a tutor record in the system.
+
+
+2. Inheritance
+
+Tutor extends Person.
+This allows Tutor to reuse common person fields.
+
+
+3. Abstraction
+
+TutorService is an interface.
+It hides the actual implementation details.
+
+The controller only knows that TutorService has methods like:
+
+- addTutor
+- getAllTutors
+- updateTutor
+- deleteTutor
+
+The controller does not need to know exactly how those methods work internally.
+
+
+4. Encapsulation
+
+Fields in the model classes are private.
+Example:
+
+private String name;
+private String email;
+private String phone;
+
+These fields are accessed using getters and setters.
+
+Example:
+
+getName()
+setName()
+
+This protects data and controls how values are read and changed.
+
+
+5. Interface Implementation
+
+TutorServiceImpl implements TutorService.
+
+TutorService defines the methods.
+TutorServiceImpl provides the actual code for those methods.
+
+
+6. Dependency Injection
+
+Spring automatically provides required objects through constructors.
+
+Example:
+
+TutorController receives TutorService through its constructor.
+TutorServiceImpl receives TutorRepository through its constructor.
+
+This means objects are not manually created using new.
+Spring manages them.
+
+
+7. REST API
+
+TutorController exposes REST API endpoints.
+
+Examples:
+
+GET /api/tutors
+POST /api/tutors
+PUT /api/tutors/{id}
+DELETE /api/tutors/{id}
+
+The frontend communicates with these endpoints.
+
+
+8. JPA Entity
+
+Tutor is marked with:
+
+@Entity
+@Table(name = "tutors")
+
+This means Tutor is connected to a database table named tutors.
+
+
+9. Repository Pattern
+
+TutorRepository handles database operations.
+The service layer does not write SQL directly.
+Spring Data JPA provides methods like:
+
+- save()
+- findAll()
+- findById()
+- delete()
+
+
+10. Security
+
+SecurityConfig protects admin routes.
+
+Public users can view tutors.
+Only admin users can add, update, or delete tutors.
+
+The admin login is currently stored in memory:
+
+username: admin
+password: admin123
+
+
+5. CRUD Operations
+
+CRUD means:
+
+C - Create
+R - Read
+U - Update
+D - Delete
+
+This project supports CRUD for Tutor data.
+
+
+Create
+
+Purpose:
+Add a new tutor.
+
+Frontend:
+The admin fills the Add Tutor form.
+
+API:
+POST /api/tutors
+
+Controller method:
+addTutor(tutor)
+
+Service method:
+addTutor(tutor)
+
+Repository method:
+save(tutor)
+
+Database result:
+A new row is added to the tutors table.
+
+
+Read
+
+Purpose:
+View tutor data.
+
+API examples:
+
+GET /api/tutors
+GET /api/tutors/{id}
+GET /api/tutors/search/subject?subject=Math
+GET /api/tutors/search/name?name=John
+GET /api/tutors/search/type?tutorType=Online
+
+Controller methods:
+
+- getAllTutors()
+- getTutorById(id)
+- searchBySubject(subject)
+- searchByName(name)
+- searchByTutorType(tutorType)
+
+Repository methods:
+
+- findAll()
+- findById(id)
+- findBySubjectContainingIgnoreCase(subject)
+- findByNameContainingIgnoreCase(name)
+- findByTutorTypeContainingIgnoreCase(tutorType)
+
+Database result:
+Tutor records are selected from the tutors table.
+
+
+Update
+
+Purpose:
+Edit an existing tutor.
+
+Frontend:
+The admin opens an existing tutor and updates the form.
+
+API:
+PUT /api/tutors/{id}
+
+Controller method:
+updateTutor(id, tutor)
+
+Service method:
+updateTutor(id, tutor)
+
+Repository method:
+save(existingTutor)
+
+Database result:
+The existing tutor row is updated in the tutors table.
+
+
+Delete
+
+Purpose:
+Remove a tutor.
+
+Frontend:
+The admin clicks Delete.
+
+API:
+DELETE /api/tutors/{id}
+
+Controller method:
+deleteTutor(id)
+
+Service method:
+deleteTutor(id)
+
+Repository method:
+delete(existingTutor)
+
+Database result:
+The tutor row is removed from the tutors table.
+
+
+6. Diagram - Relationships
+
+Text diagram:
+
+HomeTutorSearchAndBookingSystemApplication
+        |
+        | starts Spring Boot application
+        v
+Spring Boot Application
+
+
+Person
+  ^
+  |
+Tutor
+
+
+TutorController
+        |
+        | uses
+        v
+TutorService
+        ^
+        | implements
+        |
+TutorServiceImpl
+        |
+        | uses
+        v
+TutorRepository
+        |
+        | extends
+        v
+JpaRepository<Tutor, Long>
+        |
+        | manages
+        v
+Tutor
+
+
+ReactPageController
+        |
+        | forwards frontend routes
+        v
+index.html / React App
+
+
+SecurityConfig
+        |
+        | protects
+        v
+Admin pages and tutor write APIs
+
+
+Relationship meanings:
+
+1. Person <|-- Tutor
+   Tutor inherits from Person.
+
+2. TutorService <|.. TutorServiceImpl
+   TutorServiceImpl implements TutorService.
+
+3. JpaRepository <|-- TutorRepository
+   TutorRepository extends JpaRepository.
+
+4. TutorController --> TutorService
+   TutorController depends on TutorService.
+
+5. TutorServiceImpl --> TutorRepository
+   TutorServiceImpl depends on TutorRepository.
+
+6. TutorRepository --> Tutor
+   TutorRepository manages Tutor objects in the database.
+
+7. TutorController --> Tutor
+   TutorController receives and returns Tutor objects through the API.
+
+
+7. Simple Summary
+
+The project is built using layered architecture.
+
+Frontend:
+Shows pages and forms to the user.
+
+Controller:
+Receives API requests.
+
+Service:
+Contains business logic.
+
+Repository:
+Handles database operations.
+
+Model:
+Represents the data structure.
+
+Database:
+Stores tutor information.
+
+The most important model is Tutor.
+Tutor inherits common fields from Person.
+Tutor data is stored in the MySQL tutors table.
+
+The system currently has tutor CRUD features:
+
+- Add tutor
+- View tutors
+- Search tutors
+- Edit tutor
+- Delete tutor

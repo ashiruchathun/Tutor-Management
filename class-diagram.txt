@@ -1,0 +1,144 @@
+Home Tutor Search and Booking System - Class Diagram
+
+PlantUML Text Version
+
+@startuml
+title Home Tutor Search and Booking System - Class Diagram
+
+class HomeTutorSearchAndBookingSystemApplication {
+  +main(args: String[]): void
+}
+
+class SecurityConfig {
+  +securityFilterChain(http: HttpSecurity): SecurityFilterChain
+  +userDetailsService(): UserDetailsService
+}
+
+class ReactPageController {
+  +dashboard(): String
+}
+
+class TutorController {
+  -tutorService: TutorService
+  +TutorController(tutorService: TutorService)
+  +addTutor(tutor: Tutor): Tutor
+  +getAllTutors(): List<Tutor>
+  +getTutorById(id: Long): Tutor
+  +searchBySubject(subject: String): List<Tutor>
+  +searchByName(name: String): List<Tutor>
+  +searchByTutorType(tutorType: String): List<Tutor>
+  +updateTutor(id: Long, tutor: Tutor): Tutor
+  +deleteTutor(id: Long): String
+}
+
+abstract class Person {
+  -name: String
+  -email: String
+  -phone: String
+  +Person()
+  +getName(): String
+  +getEmail(): String
+  +getPhone(): String
+  +setName(name: String): void
+  +setEmail(email: String): void
+  +setPhone(phone: String): void
+}
+
+class Tutor {
+  -tutorId: Long
+  -subject: String
+  -qualification: String
+  -experienceYears: int
+  -hourlyRate: double
+  -availability: String
+  -tutorType: String
+  +Tutor()
+  +getTutorId(): Long
+  +setTutorId(tutorId: Long): void
+  +getSubject(): String
+  +getQualification(): String
+  +getExperienceYears(): int
+  +getHourlyRate(): double
+  +getAvailability(): String
+  +getTutorType(): String
+  +setSubject(subject: String): void
+  +setQualification(qualification: String): void
+  +setExperienceYears(experienceYears: int): void
+  +setHourlyRate(hourlyRate: double): void
+  +setAvailability(availability: String): void
+  +setTutorType(tutorType: String): void
+}
+
+interface TutorService {
+  +addTutor(tutor: Tutor): Tutor
+  +getAllTutors(): List<Tutor>
+  +getTutorById(id: Long): Tutor
+  +searchBySubject(subject: String): List<Tutor>
+  +searchByName(name: String): List<Tutor>
+  +searchByTutorType(tutorType: String): List<Tutor>
+  +updateTutor(id: Long, tutor: Tutor): Tutor
+  +deleteTutor(id: Long): void
+}
+
+class TutorServiceImpl {
+  -tutorRepository: TutorRepository
+  +TutorServiceImpl(tutorRepository: TutorRepository)
+  +addTutor(tutor: Tutor): Tutor
+  +getAllTutors(): List<Tutor>
+  +getTutorById(id: Long): Tutor
+  +searchBySubject(subject: String): List<Tutor>
+  +searchByName(name: String): List<Tutor>
+  +searchByTutorType(tutorType: String): List<Tutor>
+  +updateTutor(id: Long, tutor: Tutor): Tutor
+  +deleteTutor(id: Long): void
+}
+
+interface TutorRepository {
+  +findBySubjectContainingIgnoreCase(subject: String): List<Tutor>
+  +findByNameContainingIgnoreCase(name: String): List<Tutor>
+  +findByTutorTypeContainingIgnoreCase(tutorType: String): List<Tutor>
+}
+
+interface JpaRepository<Tutor, Long>
+
+Person <|-- Tutor
+
+TutorService <|.. TutorServiceImpl
+JpaRepository <|-- TutorRepository
+
+TutorController --> TutorService
+TutorServiceImpl --> TutorRepository
+TutorRepository --> Tutor
+TutorController --> Tutor
+
+ReactPageController ..> HomeTutorSearchAndBookingSystemApplication
+SecurityConfig ..> HomeTutorSearchAndBookingSystemApplication
+
+@enduml
+
+
+Relationship Explanation
+
+1. Tutor inherits from Person.
+   Tutor gets the common person fields: name, email, and phone.
+
+2. TutorController uses TutorService.
+   The controller receives API requests from the frontend and passes work to the service layer.
+
+3. TutorServiceImpl implements TutorService.
+   TutorService defines the methods, and TutorServiceImpl contains the actual business logic.
+
+4. TutorServiceImpl uses TutorRepository.
+   The service calls the repository to save, update, delete, and search tutor records.
+
+5. TutorRepository extends JpaRepository.
+   Spring Data JPA provides database functions such as save, findAll, findById, and delete.
+
+6. TutorRepository manages Tutor entities.
+   Tutor data is stored in the MySQL tutors table.
+
+7. ReactPageController serves React frontend routes.
+   It forwards routes like /tutors and /admin/tutors to index.html.
+
+8. SecurityConfig controls login and route access.
+   It protects admin pages and write API operations.
