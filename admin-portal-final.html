@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TutorAdmin – Home Tutor Search & Booking System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#222536;--border:#2e3147;--accent:#6c63ff;--accent2:#00d4aa;--danger:#ff4d6d;--warn:#ffb347;--text:#e8eaf0;--muted:#8b8fa8;--sidebar-w:230px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at 60% 40%,#1a1550 0%,#0f1117 70%);}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:380px;text-align:center;}
+.login-box .logo{font-size:48px;margin-bottom:12px;}
+.login-box h1{font-size:24px;font-weight:700;}
+.login-box>p{color:var(--muted);font-size:13px;margin:6px 0 28px;}
+.field{text-align:left;margin-bottom:16px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+.field input{width:100%;padding:11px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:.2s;}
+.field input:focus{border-color:var(--accent);}
+.btn-login{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;font-family:inherit;transition:.2s;}
+.btn-login:hover{background:#7b73ff;}
+.login-hint{margin-top:16px;color:var(--muted);font-size:12px;}
+.error-msg{color:var(--danger);font-size:13px;margin-bottom:10px;display:none;padding:8px;background:rgba(255,77,109,.1);border-radius:8px;}
+#app{display:none;}
+.layout{display:flex;min-height:100vh;}
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;}
+.sidebar-brand{padding:24px 20px 16px;border-bottom:1px solid var(--border);}
+.sidebar-brand h2{font-size:18px;font-weight:700;color:var(--accent);}
+.sidebar-brand p{font-size:11px;color:var(--muted);margin-top:2px;}
+.sidebar-admin{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--border);}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;}
+.admin-name{font-size:13px;font-weight:600;}
+.admin-role{font-size:11px;color:var(--muted);}
+.nav{flex:1;padding:12px;display:flex;flex-direction:column;gap:2px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:.15s;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:rgba(108,99,255,.15);color:var(--accent);}
+.nav-item .icon{font-size:16px;width:20px;text-align:center;}
+.logout-btn{margin:12px;padding:10px;background:rgba(255,77,109,.1);color:var(--danger);border:1px solid rgba(255,77,109,.2);border-radius:9px;cursor:pointer;font-size:13px;font-family:inherit;}
+.logout-btn:hover{background:rgba(255,77,109,.2);}
+.main{margin-left:var(--sidebar-w);flex:1;padding:28px;overflow-y:auto;min-height:100vh;}
+.page{display:none;}
+.page.active{display:block;}
+.page-header{margin-bottom:24px;}
+.page-header h1{font-size:22px;font-weight:700;}
+.page-header p{color:var(--muted);font-size:13px;margin-top:4px;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;border-left:3px solid;}
+.stat-card.blue{border-left-color:#6c63ff;}
+.stat-card.green{border-left-color:#00d4aa;}
+.stat-card.orange{border-left-color:#ffb347;}
+.stat-card.red{border-left-color:#ff4d6d;}
+.stat-card.purple{border-left-color:#c77dff;}
+.stat-val{font-size:28px;font-weight:700;font-family:'DM Mono',monospace;}
+.stat-label{font-size:12px;color:var(--muted);margin-top:4px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:20px;}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.card-header h2{font-size:16px;font-weight:600;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:10px 12px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--border);}
+td{padding:12px;font-size:13px;border-bottom:1px solid rgba(46,49,71,.5);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.02);}
+.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block;}
+.badge-active,.badge-confirmed,.badge-paid{background:rgba(0,212,170,.15);color:#00d4aa;}
+.badge-inactive,.badge-cancelled{background:rgba(255,77,109,.15);color:#ff4d6d;}
+.badge-pending,.badge-unpaid{background:rgba(255,179,71,.15);color:#ffb347;}
+.btn{padding:7px 14px;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;transition:.15s;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:#7b73ff;}
+.btn-success{background:rgba(0,212,170,.2);color:#00d4aa;border:1px solid rgba(0,212,170,.3);}
+.btn-success:hover{background:rgba(0,212,170,.3);}
+.btn-danger{background:rgba(255,77,109,.15);color:#ff4d6d;border:1px solid rgba(255,77,109,.25);}
+.btn-danger:hover{background:rgba(255,77,109,.25);}
+.btn-edit{background:rgba(108,99,255,.15);color:var(--accent);border:1px solid rgba(108,99,255,.25);}
+.btn-edit:hover{background:rgba(108,99,255,.25);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);align-items:center;justify-content:center;z-index:1000;display:none;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;width:460px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.modal h2{font-size:18px;font-weight:700;margin-bottom:20px;}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;}
+.form-group input,.form-group select{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:.2s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);}
+.form-group select option{background:var(--surface2);}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+.btn-cancel{background:var(--surface2);color:var(--muted);border:1px solid var(--border);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit;}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.chart-wrap h3{font-size:14px;font-weight:600;margin-bottom:16px;color:var(--muted);}
+.bar-chart{display:flex;align-items:flex-end;gap:12px;height:120px;}
+.bar-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;}
+.bar{width:100%;border-radius:6px 6px 0 0;min-height:4px;}
+.bar-label{font-size:10px;color:var(--muted);font-weight:600;}
+.bar-val{font-size:11px;font-weight:700;font-family:'DM Mono',monospace;}
+.pie-wrap{display:flex;align-items:center;gap:20px;}
+.pie-legend{display:flex;flex-direction:column;gap:8px;}
+.pie-item{display:flex;align-items:center;gap:8px;font-size:12px;}
+.pie-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.loading{color:var(--muted);font-size:13px;text-align:center;padding:30px;}
+</style>
+</head>
+<body>
+<div id="login-screen">
+  <div class="login-box">
+    <div class="logo">🏫</div>
+    <h1>TutorAdmin</h1>
+    <p>Home Tutor Search &amp; Booking System</p>
+    <div class="error-msg" id="login-error">Error</div>
+    <div class="field"><label>Username</label><input type="text" id="uname" placeholder="admin"/></div>
+    <div class="field"><label>Password</label><input type="password" id="upass" placeholder="••••••••"/></div>
+    <button class="btn-login" onclick="doLogin()">Login</button>
+    <p class="login-hint">Default: admin / admin123</p>
+  </div>
+</div>
+<div id="app">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><h2>TutorAdmin</h2><p>Admin Portal</p></div>
+      <div class="sidebar-admin">
+        <div class="avatar" id="av">A</div>
+        <div><div class="admin-name" id="admin-name-display">Admin</div><div class="admin-role">Administrator</div></div>
+      </div>
+      <nav class="nav">
+        <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">📊</span>Dashboard</button>
+        <button class="nav-item" onclick="showPage('tutors',this)"><span class="icon">👨‍🏫</span>Tutors</button>
+        <button class="nav-item" onclick="showPage('students',this)"><span class="icon">🎓</span>Students</button>
+        <button class="nav-item" onclick="showPage('bookings',this)"><span class="icon">📅</span>Bookings</button>
+        <button class="nav-item" onclick="showPage('billing',this)"><span class="icon">💰</span>Billing</button>
+      </nav>
+      <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </aside>
+    <main class="main">
+      <div class="page active" id="page-dashboard">
+        <div class="page-header"><h1>Dashboard</h1><p>Welcome to the Admin Portal</p></div>
+        <div class="stats-grid">
+          <div class="stat-card blue"><div class="stat-val" id="s-tutors">—</div><div class="stat-label">👨‍🏫 Total Tutors</div></div>
+          <div class="stat-card green"><div class="stat-val" id="s-students">—</div><div class="stat-label">🎓 Total Students</div></div>
+          <div class="stat-card orange"><div class="stat-val" id="s-bookings">—</div><div class="stat-label">📅 Total Bookings</div></div>
+          <div class="stat-card red"><div class="stat-val" id="s-pending">—</div><div class="stat-label">⏳ Pending Bookings</div></div>
+          <div class="stat-card purple"><div class="stat-val" id="s-revenue">—</div><div class="stat-label">💰 Revenue (Rs.)</div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-wrap"><h3>System Overview</h3><div class="bar-chart" id="bar-chart"></div></div>
+          <div class="chart-wrap"><h3>Revenue vs Outstanding</h3><div class="pie-wrap"><canvas id="pie-canvas" width="120" height="120"></canvas><div class="pie-legend" id="pie-legend"></div></div></div>
+        </div>
+      </div>
+      <div class="page" id="page-tutors">
+        <div class="page-header"><h1>Tutor Management</h1><p>Manage all registered tutors</p></div>
+        <div class="card">
+          <div class="card-header"><h2 id="tutor-count">All Tutors</h2><button class="btn btn-primary" onclick="openTutorModal()">+ Add Tutor</button></div>
+          <table><thead><tr><th>Name</th><th>Email</th><th>Subject</th><th>Rate/hr</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="tutors-tbody"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody></table>
+        </div>
+      </div>
+      <div class="page" id="page-students">
+        <div class="page-header"><h1>Student Management</h1><p>Manage all registered students</p></div>
+        <div class="card">
+          <div class="card-header"><h2 id="student-count">All Students</h2><button class="btn btn-primary" onclick="openStudentModal()">+ Add Student</button></div>
+          <table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Grade</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="students-tbody"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody></table>
+        </div>
+      </div>
+      <div class="page" id="page-bookings">
+        <div class="page-header"><h1>Booking Management</h1><p>Manage all tutor session bookings</p></div>
+        <div class="card">
+          <div class="card-header"><h2 id="booking-count">All Bookings</h2><button class="btn btn-primary" onclick="openBookingModal()">+ Add Booking</button></div>
+          <table><thead><tr><th>Tutor</th><th>Student</th><th>Subject</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="bookings-tbody"><tr><td colspan="7" class="loading">Loading...</td></tr></tbody></table>
+        </div>
+      </div>
+      <div class="page" id="page-billing">
+        <div class="page-header"><h1>Billing Management</h1><p>Track payments and invoices</p></div>
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;">
+          <div class="stat-card green"><div class="stat-val" id="b-paid">—</div><div class="stat-label">✅ Total Paid (Rs.)</div></div>
+          <div class="stat-card red"><div class="stat-val" id="b-unpaid">—</div><div class="stat-label">❌ Outstanding (Rs.)</div></div>
+          <div class="stat-card blue"><div class="stat-val" id="b-total">—</div><div class="stat-label">💰 Total Billed (Rs.)</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2 id="billing-count">All Invoices</h2><button class="btn btn-primary" onclick="openBillingModal()">+ Add Invoice</button></div>
+          <table><thead><tr><th>Booking #</th><th>Student</th><th>Tutor</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="billing-tbody"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody></table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<!-- TUTOR MODAL -->
+<div class="modal-overlay" id="tutor-modal">
+  <div class="modal">
+    <h2 id="tutor-modal-title">Add New Tutor</h2>
+    <input type="hidden" id="tutor-id"/>
+    <div class="form-group"><label>Full Name</label><input type="text" id="t-name" placeholder="Dr. Nimal Perera"/></div>
+    <div class="form-group"><label>Email</label><input type="email" id="t-email" placeholder="nimal@email.com"/></div>
+    <div class="form-group"><label>Phone</label><input type="text" id="t-phone" placeholder="0712345678"/></div>
+    <div class="form-group"><label>Subject</label><input type="text" id="t-subject" placeholder="Mathematics"/></div>
+    <div class="form-group"><label>Hourly Rate (Rs.)</label><input type="number" id="t-rate" placeholder="1500"/></div>
+    <div class="form-group"><label>Status</label><select id="t-status"><option value="ACTIVE">ACTIVE</option><option value="INACTIVE">INACTIVE</option></select></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal('tutor-modal')">Cancel</button><button class="btn btn-primary" onclick="saveTutor()">Save Tutor</button></div>
+  </div>
+</div>
+<!-- STUDENT MODAL -->
+<div class="modal-overlay" id="student-modal">
+  <div class="modal">
+    <h2 id="student-modal-title">Add New Student</h2>
+    <input type="hidden" id="student-id"/>
+    <div class="form-group"><label>Full Name</label><input type="text" id="s-name" placeholder="Kamal Jayawardena"/></div>
+    <div class="form-group"><label>Email</label><input type="email" id="s-email" placeholder="kamal@email.com"/></div>
+    <div class="form-group"><label>Phone</label><input type="text" id="s-phone" placeholder="0712345678"/></div>
+    <div class="form-group"><label>Grade</label><input type="text" id="s-grade" placeholder="Grade 10"/></div>
+    <div class="form-group"><label>Status</label><select id="s-status"><option value="ACTIVE">ACTIVE</option><option value="INACTIVE">INACTIVE</option></select></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal('student-modal')">Cancel</button><button class="btn btn-primary" onclick="saveStudent()">Save Student</button></div>
+  </div>
+</div>
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="booking-modal">
+  <div class="modal">
+    <h2>Add New Booking</h2>
+    <div class="form-group"><label>Tutor</label><select id="b-tutor"></select></div>
+    <div class="form-group"><label>Student</label><select id="b-student"></select></div>
+    <div class="form-group"><label>Subject</label><input type="text" id="b-subject" placeholder="Mathematics"/></div>
+    <div class="form-group"><label>Booking Date</label><input type="date" id="b-date"/></div>
+    <div class="form-group"><label>Start Time</label><input type="time" id="b-start"/></div>
+    <div class="form-group"><label>End Time</label><input type="time" id="b-end"/></div>
+    <div class="form-group"><label>Status</label><select id="b-bstatus"><option value="PENDING">PENDING</option><option value="CONFIRMED">CONFIRMED</option><option value="CANCELLED">CANCELLED</option></select></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal('booking-modal')">Cancel</button><button class="btn btn-primary" onclick="saveBooking()">Save Booking</button></div>
+  </div>
+</div>
+<!-- BILLING MODAL -->
+<div class="modal-overlay" id="billing-modal">
+  <div class="modal">
+    <h2>Add New Invoice</h2>
+    <div class="form-group"><label>Select Booking</label><select id="bl-booking"></select></div>
+    <div class="form-group"><label>Amount (Rs.)</label><input type="number" id="bl-amount" placeholder="1500"/></div>
+    <div class="form-group"><label>Payment Status</label><select id="bl-pstatus"><option value="UNPAID">UNPAID</option><option value="PAID">PAID</option></select></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal('billing-modal')">Cancel</button><button class="btn btn-primary" onclick="saveBilling()">Save Invoice</button></div>
+  </div>
+</div>
+<script>
+var API='http://localhost:8081/api';
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+function showError(msg){var e=document.getElementById('login-error');e.textContent=msg||'Invalid username or password';e.style.display='block';}
+function logout(){
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-error').style.display='none';
+}
+document.getElementById('upass').addEventListener('keyup',function(e){if(e.key==='Enter')doLogin();});
+function doLogin(){
+  var u=document.getElementById('uname').value;
+  var p=document.getElementById('upass').value;
+  document.getElementById('login-error').style.display='none';
+  if(!u||!p){showError('Please enter username and password');return;}
+  fetch(API+'/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.success){
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('app').style.display='block';
+      document.getElementById('admin-name-display').textContent=d.adminName;
+      document.getElementById('av').textContent=d.adminName.charAt(0).toUpperCase();
+      loadDashboard();loadTutors();loadStudents();loadBookings();loadBilling();
+    } else {showError('Invalid username or password');}
+  })
+  .catch(function(){showError('Cannot connect! Make sure IntelliJ is running on port 8081');});
+}
+function loadDashboard(){
+  fetch(API+'/reports/dashboard-stats')
+  .then(function(r){return r.json();})
+  .then(function(d){
+    document.getElementById('s-tutors').textContent=d.totalTutors||0;
+    document.getElementById('s-students').textContent=d.totalStudents||0;
+    document.getElementById('s-bookings').textContent=d.totalBookings||0;
+    document.getElementById('s-pending').textContent=d.pendingBookings||0;
+    document.getElementById('s-revenue').textContent=Number(d.totalRevenue||0).toLocaleString();
+    drawBar([
+      {label:'Tutors',val:d.totalTutors||0,color:'#6c63ff'},
+      {label:'Students',val:d.totalStudents||0,color:'#00d4aa'},
+      {label:'Bookings',val:d.totalBookings||0,color:'#ffb347'},
+      {label:'Pending',val:d.pendingBookings||0,color:'#ff4d6d'}
+    ]);
+    drawPie(Number(d.totalRevenue||0),Number(d.outstandingAmount||0));
+  }).catch(function(){});
+}
+function drawBar(data){
+  var max=Math.max.apply(null,data.map(function(d){return d.val;}));
+  if(max===0)max=1;
+  var el=document.getElementById('bar-chart');
+  el.innerHTML=data.map(function(d){
+    return '<div class="bar-item"><div class="bar-val" style="color:'+d.color+'">'+d.val+'</div><div class="bar" style="height:'+(d.val/max*100)+'%;background:'+d.color+';opacity:.85"></div><div class="bar-label">'+d.label+'</div></div>';
+  }).join('');
+}
+function drawPie(paid,outstanding){
+  var canvas=document.getElementById('pie-canvas');
+  var ctx=canvas.getContext('2d');
+  var total=paid+outstanding||1;
+  var slices=[{val:paid,color:'#00d4aa',label:'Paid'},{val:outstanding,color:'#ff4d6d',label:'Outstanding'}];
+  var start=-Math.PI/2;
+  ctx.clearRect(0,0,120,120);
+  slices.forEach(function(s){
+    var angle=(s.val/total)*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(60,60);ctx.arc(60,60,55,start,start+angle);ctx.closePath();ctx.fillStyle=s.color;ctx.fill();
+    start+=angle;
+  });
+  ctx.beginPath();ctx.arc(60,60,30,0,Math.PI*2);ctx.fillStyle='#1a1d27';ctx.fill();
+  document.getElementById('pie-legend').innerHTML=slices.map(function(s){
+    return '<div class="pie-item"><div class="pie-dot" style="background:'+s.color+'"></div><span style="color:var(--muted)">'+s.label+': <strong style="color:var(--text)">Rs.'+Number(s.val).toLocaleString()+'</strong></span></div>';
+  }).join('');
+}
+var tutorsData=[];
+function loadTutors(){
+  fetch(API+'/tutors').then(function(r){return r.json();}).then(function(data){
+    tutorsData=data;
+    document.getElementById('tutor-count').textContent='All Tutors ('+data.length+')';
+    var tb=document.getElementById('tutors-tbody');
+    if(!data.length){tb.innerHTML='<tr><td colspan="6" class="loading">No tutors found</td></tr>';return;}
+    tb.innerHTML=data.map(function(t){
+      return '<tr><td><strong>'+t.fullName+'</strong></td><td>'+t.email+'</td><td>'+(t.subject||'—')+'</td><td>Rs. '+Number(t.hourlyRate||0).toLocaleString()+'</td><td><span class="badge badge-'+(t.status||'').toLowerCase()+'">'+t.status+'</span></td><td style="display:flex;gap:6px;"><button class="btn btn-edit" onclick="editTutor('+t.id+')">Edit</button><button class="btn btn-danger" onclick="deleteTutor('+t.id+')">Delete</button></td></tr>';
+    }).join('');
+  }).catch(function(){document.getElementById('tutors-tbody').innerHTML='<tr><td colspan="6" class="loading">Could not load</td></tr>';});
+}
+function openTutorModal(){
+  document.getElementById('tutor-modal-title').textContent='Add New Tutor';
+  document.getElementById('tutor-id').value='';
+  ['t-name','t-email','t-phone','t-subject','t-rate'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('t-status').value='ACTIVE';
+  document.getElementById('tutor-modal').classList.add('open');
+}
+function editTutor(id){
+  var t=tutorsData.find(function(x){return x.id===id;});
+  if(!t)return;
+  document.getElementById('tutor-modal-title').textContent='Edit Tutor';
+  document.getElementById('tutor-id').value=t.id;
+  document.getElementById('t-name').value=t.fullName||'';
+  document.getElementById('t-email').value=t.email||'';
+  document.getElementById('t-phone').value=t.phone||'';
+  document.getElementById('t-subject').value=t.subject||'';
+  document.getElementById('t-rate').value=t.hourlyRate||'';
+  document.getElementById('t-status').value=t.status||'ACTIVE';
+  document.getElementById('tutor-modal').classList.add('open');
+}
+function saveTutor(){
+  var id=document.getElementById('tutor-id').value;
+  var body={fullName:document.getElementById('t-name').value,email:document.getElementById('t-email').value,phone:document.getElementById('t-phone').value,subject:document.getElementById('t-subject').value,hourlyRate:document.getElementById('t-rate').value,status:document.getElementById('t-status').value};
+  var url=id?API+'/tutors/'+id:API+'/tutors';
+  var method=id?'PUT':'POST';
+  fetch(url,{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+  .then(function(){closeModal('tutor-modal');loadTutors();loadDashboard();})
+  .catch(function(){alert('Error saving tutor');});
+}
+function deleteTutor(id){
+  if(!confirm('Delete this tutor?'))return;
+  fetch(API+'/tutors/'+id,{method:'DELETE'}).then(function(){loadTutors();loadDashboard();});
+}
+var studentsData=[];
+function loadStudents(){
+  fetch(API+'/students').then(function(r){return r.json();}).then(function(data){
+    studentsData=data;
+    document.getElementById('student-count').textContent='All Students ('+data.length+')';
+    var tb=document.getElementById('students-tbody');
+    if(!data.length){tb.innerHTML='<tr><td colspan="6" class="loading">No students found</td></tr>';return;}
+    tb.innerHTML=data.map(function(s){
+      return '<tr><td><strong>'+s.fullName+'</strong></td><td>'+s.email+'</td><td>'+(s.phone||'—')+'</td><td>'+(s.grade||'—')+'</td><td><span class="badge badge-'+(s.status||'').toLowerCase()+'">'+s.status+'</span></td><td style="display:flex;gap:6px;"><button class="btn btn-edit" onclick="editStudent('+s.id+')">Edit</button><button class="btn btn-danger" onclick="deleteStudent('+s.id+')">Delete</button></td></tr>';
+    }).join('');
+  }).catch(function(){document.getElementById('students-tbody').innerHTML='<tr><td colspan="6" class="loading">Could not load</td></tr>';});
+}
+function openStudentModal(){
+  document.getElementById('student-modal-title').textContent='Add New Student';
+  document.getElementById('student-id').value='';
+  ['s-name','s-email','s-phone','s-grade'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('s-status').value='ACTIVE';
+  document.getElementById('student-modal').classList.add('open');
+}
+function editStudent(id){
+  var s=studentsData.find(function(x){return x.id===id;});
+  if(!s)return;
+  document.getElementById('student-modal-title').textContent='Edit Student';
+  document.getElementById('student-id').value=s.id;
+  document.getElementById('s-name').value=s.fullName||'';
+  document.getElementById('s-email').value=s.email||'';
+  document.getElementById('s-phone').value=s.phone||'';
+  document.getElementById('s-grade').value=s.grade||'';
+  document.getElementById('s-status').value=s.status||'ACTIVE';
+  document.getElementById('student-modal').classList.add('open');
+}
+function saveStudent(){
+  var id=document.getElementById('student-id').value;
+  var body={fullName:document.getElementById('s-name').value,email:document.getElementById('s-email').value,phone:document.getElementById('s-phone').value,grade:document.getElementById('s-grade').value,status:document.getElementById('s-status').value};
+  var url=id?API+'/students/'+id:API+'/students';
+  var method=id?'PUT':'POST';
+  fetch(url,{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+  .then(function(){closeModal('student-modal');loadStudents();loadDashboard();})
+  .catch(function(){alert('Error saving student');});
+}
+function deleteStudent(id){
+  if(!confirm('Delete this student?'))return;
+  fetch(API+'/students/'+id,{method:'DELETE'}).then(function(){loadStudents();loadDashboard();});
+}
+var bookingsData=[];
+function loadBookings(){
+  fetch(API+'/bookings').then(function(r){return r.json();}).then(function(data){
+    bookingsData=data;
+    document.getElementById('booking-count').textContent='All Bookings ('+data.length+')';
+    var tb=document.getElementById('bookings-tbody');
+    if(!data.length){tb.innerHTML='<tr><td colspan="7" class="loading">No bookings found</td></tr>';return;}
+    tb.innerHTML=data.map(function(b){
+      var actions='';
+      if(b.status==='PENDING')actions+='<button class="btn btn-success" onclick="confirmBooking('+b.id+')">Confirm</button> ';
+      actions+='<button class="btn btn-danger" onclick="deleteBooking('+b.id+')">Delete</button>';
+      return '<tr><td>'+(b.tutor?b.tutor.fullName:'—')+'</td><td>'+(b.student?b.student.fullName:'—')+'</td><td>'+(b.subject||'—')+'</td><td>'+(b.bookingDate||'—')+'</td><td>'+(b.startTime||'—')+' – '+(b.endTime||'—')+'</td><td><span class="badge badge-'+(b.status||'').toLowerCase()+'">'+b.status+'</span></td><td>'+actions+'</td></tr>';
+    }).join('');
+  }).catch(function(){document.getElementById('bookings-tbody').innerHTML='<tr><td colspan="7" class="loading">Could not load</td></tr>';});
+}
+function openBookingModal(){
+  Promise.all([fetch(API+'/tutors').then(function(r){return r.json();}),fetch(API+'/students').then(function(r){return r.json();})])
+  .then(function(results){
+    var tutors=results[0];var students=results[1];
+    document.getElementById('b-tutor').innerHTML=tutors.map(function(t){return '<option value="'+t.id+'">'+t.fullName+'</option>';}).join('');
+    document.getElementById('b-student').innerHTML=students.map(function(s){return '<option value="'+s.id+'">'+s.fullName+'</option>';}).join('');
+    document.getElementById('b-subject').value='';
+    document.getElementById('b-date').value='';
+    document.getElementById('b-start').value='';
+    document.getElementById('b-end').value='';
+    document.getElementById('b-bstatus').value='PENDING';
+    document.getElementById('booking-modal').classList.add('open');
+  });
+}
+function saveBooking(){
+  var body={tutor:{id:parseInt(document.getElementById('b-tutor').value)},student:{id:parseInt(document.getElementById('b-student').value)},subject:document.getElementById('b-subject').value,bookingDate:document.getElementById('b-date').value,startTime:document.getElementById('b-start').value,endTime:document.getElementById('b-end').value,status:document.getElementById('b-bstatus').value};
+  fetch(API+'/bookings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+  .then(function(){closeModal('booking-modal');loadBookings();loadDashboard();})
+  .catch(function(){alert('Error saving booking');});
+}
+function confirmBooking(id){
+  fetch(API+'/bookings/'+id+'/status?status=CONFIRMED',{method:'PUT'}).then(function(){loadBookings();loadDashboard();});
+}
+function deleteBooking(id){
+  if(!confirm('Delete this booking?'))return;
+  fetch(API+'/bookings/'+id,{method:'DELETE'}).then(function(){loadBookings();loadDashboard();});
+}
+function loadBilling(){
+  fetch(API+'/billing').then(function(r){return r.json();}).then(function(data){
+    document.getElementById('billing-count').textContent='All Invoices ('+data.length+')';
+    var paid=data.filter(function(b){return b.paymentStatus==='PAID';}).reduce(function(s,b){return s+Number(b.amount||0);},0);
+    var total=data.reduce(function(s,b){return s+Number(b.amount||0);},0);
+    document.getElementById('b-paid').textContent=paid.toLocaleString();
+    document.getElementById('b-unpaid').textContent=(total-paid).toLocaleString();
+    document.getElementById('b-total').textContent=total.toLocaleString();
+    var tb=document.getElementById('billing-tbody');
+    if(!data.length){tb.innerHTML='<tr><td colspan="6" class="loading">No invoices found</td></tr>';return;}
+    tb.innerHTML=data.map(function(b){
+      var action=b.paymentStatus==='UNPAID'?'<button class="btn btn-success" onclick="markPaid('+b.id+')">Mark Paid</button>':'';
+      return '<tr><td>#'+(b.booking?b.booking.id:'—')+'</td><td>'+(b.booking&&b.booking.student?b.booking.student.fullName:'—')+'</td><td>'+(b.booking&&b.booking.tutor?b.booking.tutor.fullName:'—')+'</td><td>Rs. '+Number(b.amount||0).toLocaleString()+'</td><td><span class="badge badge-'+(b.paymentStatus||'').toLowerCase()+'">'+b.paymentStatus+'</span></td><td>'+action+'</td></tr>';
+    }).join('');
+  }).catch(function(){document.getElementById('billing-tbody').innerHTML='<tr><td colspan="6" class="loading">Could not load</td></tr>';});
+}
+function openBillingModal(){
+  fetch(API+'/bookings').then(function(r){return r.json();}).then(function(bookings){
+    document.getElementById('bl-booking').innerHTML=bookings.map(function(b){return '<option value="'+b.id+'">#'+b.id+' - '+(b.tutor?b.tutor.fullName:'?')+' & '+(b.student?b.student.fullName:'?')+'</option>';}).join('');
+    document.getElementById('bl-amount').value='';
+    document.getElementById('bl-pstatus').value='UNPAID';
+    document.getElementById('billing-modal').classList.add('open');
+  });
+}
+function saveBilling(){
+  var body={booking:{id:parseInt(document.getElementById('bl-booking').value)},amount:document.getElementById('bl-amount').value,paymentStatus:document.getElementById('bl-pstatus').value};
+  fetch(API+'/billing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+  .then(function(){closeModal('billing-modal');loadBilling();loadDashboard();})
+  .catch(function(){alert('Error saving invoice');});
+}
+function markPaid(id){
+  fetch(API+'/billing/'+id+'/payment-status?status=PAID',{method:'PUT'}).then(function(){loadBilling();loadDashboard();});
+}
+</script>
+</body>
+</html>
